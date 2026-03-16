@@ -1,17 +1,25 @@
 
-public class BookMyStayApp {
+public abstract class BookMyStayApp {
 
+    protected String roomType;
+    protected int beds;
+    protected double size;
+    protected double price;
 
-    public static void main(String[] args) {
+    /**
+     * Constructor to initialize common room attributes
+     */
+    public BookMyStayApp(String roomType, int beds, double size, double price) {
+        this.roomType = roomType;
+        this.beds = beds;
+        this.size = size;
+        this.price = price;
+    }
 
-        // Display welcome message
-        System.out.println("Welcome to the Hotel Booking System!");
-
-
-        System.out.println("Application: Hotel Booking System");
-        System.out.println("Version: 1.0");
-
-        // Inform user that application is starting
-        System.out.println("System initialized successfully.");
+    public void displayRoomDetails() {
+        System.out.println("Room Type: " + roomType);
+        System.out.println("Beds: " + beds);
+        System.out.println("Size: " + size + " sq.ft");
+        System.out.println("Price: ₹" + price + " per night");
     }
 }
