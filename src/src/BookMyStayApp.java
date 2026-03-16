@@ -4,64 +4,39 @@ import java.util.Map;
 
 public class BookMyStayApp {
 
-    // HashMap to store room type and availability
-    private Map<String, Integer> inventory;
+    public static void main(String[] args) {
 
-
-    public BookMyStayApp() {
-        inventory = new HashMap<>();
+        // Centralized inventory using HashMap
+        Map<String, Integer> inventory = new HashMap<>();
 
         inventory.put("Single Room", 5);
         inventory.put("Double Room", 3);
         inventory.put("Suite Room", 2);
-    }
 
-    /**
-     * Returns current availability of a room type
-     */
-    public int getAvailability(String roomType) {
-        return inventory.getOrDefault(roomType, 0);
-    }
+        // Room catalog with details
+        Map<String, String> roomDetails = new HashMap<>();
 
-    /**
-     * Updates the availability of a specific room type
-     */
-    public void updateAvailability(String roomType, int newCount) {
-        inventory.put(roomType, newCount);
-    }
+        roomDetails.put("Single Room", "Beds: 1 | Size: 200 sq.ft | Price: ₹2500");
+        roomDetails.put("Double Room", "Beds: 2 | Size: 350 sq.ft | Price: ₹4000");
+        roomDetails.put("Suite Room", "Beds: 3 | Size: 600 sq.ft | Price: ₹8500");
 
-    /**
-     * Displays the current inventory state
-     */
-    public void displayInventory() {
+        System.out.println("----- AVAILABLE ROOMS -----");
 
-        System.out.println("---- ROOM INVENTORY ----");
+        // Guest searches available rooms
+        for (String roomType : inventory.keySet()) {
 
-        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
-            System.out.println(entry.getKey() + " Available: " + entry.getValue());
+            int available = inventory.get(roomType);
+
+            // Show only available rooms
+            if (available > 0) {
+
+                System.out.println("Room Type: " + roomType);
+                System.out.println(roomDetails.get(roomType));
+                System.out.println("Available: " + available);
+                System.out.println();
+            }
         }
-    }
 
-    /**
-     * Application entry point to demonstrate inventory management
-     */
-    public static void main(String[] args) {
-
-        // Initialize inventory
-        RoomInventory inventory = new RoomInventory();
-
-        // Display current inventory
-        inventory.displayInventory();
-
-        // Retrieve availability
-        System.out.println("\nSingle Room Availability: " +
-                inventory.getAvailability("Single Room"));
-
-        // Update availability
-        inventory.updateAvailability("Single Room", 4);
-
-        // Display updated inventory
-        System.out.println("\nUpdated Inventory:");
-        inventory.displayInventory();
+        System.out.println("Search completed. Inventory not modified.");
     }
 }
