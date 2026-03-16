@@ -3,9 +3,9 @@ import java.util.*;
 /**
  * BookMyStayApp
  *
- * Demonstrates reservation confirmation and safe room allocation.
- * Booking requests are processed in FIFO order and rooms are assigned
- * unique IDs while maintaining inventory consistency.
+ * Demonstrates add-on service selection for reservations.
+ * Guests can attach optional services to an existing reservation
+ * without modifying the core booking or inventory state.
  *
  * @author Ram Lokesh
  * @version 1.0
@@ -13,84 +13,55 @@ import java.util.*;
 public class BookMyStayApp {
 
     /**
-     * Reservation represents a booking request from a guest
+     * AddOnService represents an optional service offered to guests
      */
-    static class Reservation {
+    static class AddOnService {
 
-        String guestName;
-        String roomType;
+        String serviceName;
+        int price;
 
-        public Reservation(String guestName, String roomType) {
-            this.guestName = guestName;
-            this.roomType = roomType;
+        public AddOnService(String serviceName, int price) {
+            this.serviceName = serviceName;
+            this.price = price;
         }
     }
 
     public static void main(String[] args) {
 
-        // Inventory (room type -> available count)
-        Map<String, Integer> inventory = new HashMap<>();
-        inventory.put("Single Room", 2);
-        inventory.put("Double Room", 2);
-        inventory.put("Suite Room", 1);
+        // Map: Reservation ID -> List of selected services
+        Map<String, List<AddOnService>> reservationServices = new HashMap<>();
 
-        // Booking request queue (FIFO)
-        Queue<Reservation> bookingQueue = new LinkedList<>();
+        // Example reservation ID
+        String reservationId = "RES-101";
 
-        bookingQueue.add(new Reservation("Arun", "Single Room"));
-        bookingQueue.add(new Reservation("Meena", "Double Room"));
-        bookingQueue.add(new Reservation("Rahul", "Suite Room"));
-        bookingQueue.add(new Reservation("Priya", "Single Room"));
+        // Guest selects add-on services
+        List<AddOnService> selectedServices = new ArrayList<>();
 
-        // Set to store all allocated room IDs (ensures uniqueness)
-        Set<String> allocatedRoomIds = new HashSet<>();
+        selectedServices.add(new AddOnService("Breakfast", 500));
+        selectedServices.add(new AddOnService("Airport Pickup", 1200));
+        selectedServices.add(new AddOnService("Spa Access", 1500));
 
-        // Map to track room type -> allocated room IDs
-        Map<String, Set<String>> allocatedRooms = new HashMap<>();
+        // Map services to reservation
+        reservationServices.put(reservationId, selectedServices);
 
-        System.out.println("----- PROCESSING RESERVATIONS -----");
+        System.out.println("----- ADD-ON SERVICES SELECTED -----");
 
-        int roomCounter = 1;
+        int totalCost = 0;
 
-        // Process booking requests in FIFO order
-        while (!bookingQueue.isEmpty()) {
+        // Retrieve services for reservation
+        List<AddOnService> services = reservationServices.get(reservationId);
 
-            Reservation request = bookingQueue.poll();
+        for (AddOnService service : services) {
 
-            int available = inventory.getOrDefault(request.roomType, 0);
+            System.out.println("Service: " + service.serviceName +
+                    " | Cost: ₹" + service.price);
 
-            if (available > 0) {
-
-                // Generate unique room ID
-                String roomId = request.roomType.replace(" ", "") + "-" + roomCounter++;
-
-                // Ensure uniqueness using Set
-                allocatedRoomIds.add(roomId);
-
-                // Track allocated room IDs by type
-                allocatedRooms
-                        .computeIfAbsent(request.roomType, k -> new HashSet<>())
-                        .add(roomId);
-
-                // Update inventory immediately
-                inventory.put(request.roomType, available - 1);
-
-                System.out.println("Reservation Confirmed");
-                System.out.println("Guest: " + request.guestName);
-                System.out.println("Room Type: " + request.roomType);
-                System.out.println("Assigned Room ID: " + roomId);
-                System.out.println();
-
-            } else {
-
-                System.out.println("Reservation Failed for " + request.guestName +
-                        " (No " + request.roomType + " available)\n");
-            }
+            totalCost += service.price;
         }
 
-        System.out.println("----- FINAL INVENTORY -----");
-        for (String type : inventory.keySet()) {
-            System.out.println(type + " Available: " + inventory.get(type));
-        }
+        System.out.println("\nTotal Add-On Cost for Reservation "
+                + reservationId + ": ₹" + totalCost);
+
+        System.out.println("\nCore booking and inventory state remain unchanged.");
     }
 }
