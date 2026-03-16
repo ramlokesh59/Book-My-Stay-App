@@ -1,42 +1,46 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 public class BookMyStayApp {
 
-    public static void main(String[] args) {
+    /**
+     * Reservation class representing a guest booking request
+     */
+    static class Reservation {
 
-        // Centralized inventory using HashMap
-        Map<String, Integer> inventory = new HashMap<>();
+        String guestName;
+        String roomType;
 
-        inventory.put("Single Room", 5);
-        inventory.put("Double Room", 3);
-        inventory.put("Suite Room", 2);
-
-        // Room catalog with details
-        Map<String, String> roomDetails = new HashMap<>();
-
-        roomDetails.put("Single Room", "Beds: 1 | Size: 200 sq.ft | Price: ₹2500");
-        roomDetails.put("Double Room", "Beds: 2 | Size: 350 sq.ft | Price: ₹4000");
-        roomDetails.put("Suite Room", "Beds: 3 | Size: 600 sq.ft | Price: ₹8500");
-
-        System.out.println("----- AVAILABLE ROOMS -----");
-
-        // Guest searches available rooms
-        for (String roomType : inventory.keySet()) {
-
-            int available = inventory.get(roomType);
-
-            // Show only available rooms
-            if (available > 0) {
-
-                System.out.println("Room Type: " + roomType);
-                System.out.println(roomDetails.get(roomType));
-                System.out.println("Available: " + available);
-                System.out.println();
-            }
+        public Reservation(String guestName, String roomType) {
+            this.guestName = guestName;
+            this.roomType = roomType;
         }
 
-        System.out.println("Search completed. Inventory not modified.");
+        public void displayReservation() {
+            System.out.println("Guest: " + guestName + " | Requested Room: " + roomType);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        // Booking request queue (FIFO)
+        Queue<Reservation> bookingQueue = new LinkedList<>();
+
+        // Guests submit booking requests
+        bookingQueue.add(new Reservation("Arun", "Single Room"));
+        bookingQueue.add(new Reservation("Meena", "Double Room"));
+        bookingQueue.add(new Reservation("Rahul", "Suite Room"));
+        bookingQueue.add(new Reservation("Priya", "Single Room"));
+
+        System.out.println("----- BOOKING REQUEST QUEUE -----");
+
+        // Display queued booking requests in arrival order
+        for (Reservation reservation : bookingQueue) {
+            reservation.displayReservation();
+        }
+
+        System.out.println("\nRequests stored in FIFO order.");
+        System.out.println("No inventory updates performed at this stage.");
     }
 }
