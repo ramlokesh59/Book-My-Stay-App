@@ -1,67 +1,85 @@
 import java.util.*;
 
-/**
- * BookMyStayApp
- *
- * Demonstrates add-on service selection for reservations.
- * Guests can attach optional services to an existing reservation
- * without modifying the core booking or inventory state.
- *
- * @author Ram Lokesh
- * @version 1.0
- */
+// Main Class
 public class BookMyStayApp {
 
-    /**
-     * AddOnService represents an optional service offered to guests
-     */
-    static class AddOnService {
+    // Reservation Entity
+    static class Reservation {
+        private String reservationId;
+        private String guestName;
+        private String roomType;
+        private double price;
 
-        String serviceName;
-        int price;
-
-        public AddOnService(String serviceName, int price) {
-            this.serviceName = serviceName;
+        public Reservation(String reservationId, String guestName, String roomType, double price) {
+            this.reservationId = reservationId;
+            this.guestName = guestName;
+            this.roomType = roomType;
             this.price = price;
+        }
+
+        public String getReservationId() { return reservationId; }
+        public String getGuestName() { return guestName; }
+        public String getRoomType() { return roomType; }
+        public double getPrice() { return price; }
+    }
+
+    // Booking History (Storage)
+    static class BookingHistory {
+        private List<Reservation> reservations = new ArrayList<>();
+
+        public void addReservation(Reservation reservation) {
+            reservations.add(reservation);
+        }
+
+        public List<Reservation> getAllReservations() {
+            return Collections.unmodifiableList(reservations); // read-only
         }
     }
 
-    public static void main(String[] args) {
+    // Report Service
+    static class BookingReportService {
 
-        // Map: Reservation ID -> List of selected services
-        Map<String, List<AddOnService>> reservationServices = new HashMap<>();
-
-        // Example reservation ID
-        String reservationId = "RES-101";
-
-        // Guest selects add-on services
-        List<AddOnService> selectedServices = new ArrayList<>();
-
-        selectedServices.add(new AddOnService("Breakfast", 500));
-        selectedServices.add(new AddOnService("Airport Pickup", 1200));
-        selectedServices.add(new AddOnService("Spa Access", 1500));
-
-        // Map services to reservation
-        reservationServices.put(reservationId, selectedServices);
-
-        System.out.println("----- ADD-ON SERVICES SELECTED -----");
-
-        int totalCost = 0;
-
-        // Retrieve services for reservation
-        List<AddOnService> services = reservationServices.get(reservationId);
-
-        for (AddOnService service : services) {
-
-            System.out.println("Service: " + service.serviceName +
-                    " | Cost: ₹" + service.price);
-
-            totalCost += service.price;
+        public int getTotalBookings(List<Reservation> reservations) {
+            return reservations.size();
         }
 
-        System.out.println("\nTotal Add-On Cost for Reservation "
-                + reservationId + ": ₹" + totalCost);
+        public double getTotalRevenue(List<Reservation> reservations) {
+            double total = 0;
+            for (Reservation r : reservations) {
+                total += r.getPrice();
+            }
+            return total;
+        }
 
-        System.out.println("\nCore booking and inventory state remain unchanged.");
+        public void generateReport(List<Reservation> reservations) {
+            System.out.println("---- Booking Report ----");
+            System.out.println("Total Bookings: " + getTotalBookings(reservations));
+            System.out.println("Total Revenue: ₹" + getTotalRevenue(reservations));
+
+            System.out.println("\nBooking Details:");
+            for (Reservation r : reservations) {
+                System.out.println(
+                        r.getReservationId() + " | " +
+                                r.getGuestName() + " | " +
+                                r.getRoomType() + " | ₹" +
+                                r.getPrice()
+                );
+            }
+        }
+    }
+
+    // Main Method (Flow)
+    public static void main(String[] args) {
+
+        BookingHistory history = new BookingHistory();
+        BookingReportService reportService = new BookingReportService();
+
+        // Simulating confirmed bookings
+        history.addReservation(new Reservation("R001", "Ram", "Deluxe", 3000));
+        history.addReservation(new Reservation("R002", "Lokesh", "Suite", 5000));
+        history.addReservation(new Reservation("R003", "Arun", "Standard", 2000));
+
+        // Admin requests report
+        reportService.generateReport(history.getAllReservations());
     }
 }
